@@ -9,7 +9,7 @@ public class UsuarioResponse {
     private String nmUsuario;
     private String cpfUsuario;
     private String emailUsuario;
-    private String senhaUsuario;
+    //private String senhaUsuario;
 
     public static UsuarioResponse converter(Usuario u){
         var usuario = new UsuarioResponse();
@@ -17,7 +17,7 @@ public class UsuarioResponse {
         usuario.setCpfUsuario(u.getCpfUsuario());
         usuario.setEmailUsuario(u.getEmailUsuario());
         usuario.setNmUsuario(u.getNmUsuario());
-        usuario.setSenhaUsuario(u.getSenhaUsuario());
+        //usuario.setSenhaUsuario(u.getSenhaUsuario()); Não retornar senha do usuário
         return usuario;
     }
 
@@ -52,7 +52,7 @@ public class UsuarioResponse {
     public void setEmailUsuario(String emailUsuario) {
         this.emailUsuario = emailUsuario;
     }
-
+    /*
     public String getSenhaUsuario() {
         return this.senhaUsuario;
     }
@@ -60,6 +60,6 @@ public class UsuarioResponse {
     public void setSenhaUsuario(String senhaUsuario) {
         this.senhaUsuario = senhaUsuario;
     }
-    
+    */
     
 }

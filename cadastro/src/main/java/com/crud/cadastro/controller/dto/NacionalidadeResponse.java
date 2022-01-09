@@ -1,22 +1,15 @@
-package com.crud.cadastro.model;
+package com.crud.cadastro.controller.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="nacionalidade")
-public class Nacionalidade {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="idnacionalidade")
+public class NacionalidadeResponse {
     private Long idNacionalidade;
-
-    @Column(name="deNacionalidade")
     private String deNacionalidade;
+
+    public static NacionalidadeResponse converter(NacionalidadeResponse n){
+        var nacionalidade = new NacionalidadeResponse();
+        nacionalidade.setIdNacionalidade(n.getIdNacionalidade());
+        nacionalidade.setDeNacionalidade(n.getDeNacionalidade());
+        return nacionalidade;
+    }
 
     public Long getIdNacionalidade() {
         return this.idNacionalidade;
@@ -33,5 +26,5 @@ public class Nacionalidade {
     public void setDeNacionalidade(String deNacionalidade) {
         this.deNacionalidade = deNacionalidade;
     }
-
+    
 }

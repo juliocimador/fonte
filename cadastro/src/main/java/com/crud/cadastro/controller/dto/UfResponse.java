@@ -1,25 +1,17 @@
-package com.crud.cadastro.model;
+package com.crud.cadastro.controller.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="uf")
-public class UnidadeFederativa {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="iduf")
+public class UfResponse {
     private Long idUf;
-
-    @Column(name="deuf")
     private String deUf;
-
-    @Column(name="siglauf")
     private String siglaUf;
+
+    public static UfResponse converter(UfResponse uf){
+        var ufresponse = new UfResponse();
+        ufresponse.setIdUf(uf.getIdUf());
+        ufresponse.setDeUf(uf.getDeUf());
+        ufresponse.setSiglaUf(uf.getSiglaUf());
+        return ufresponse;
+    }
 
     public Long getIdUf() {
         return this.idUf;

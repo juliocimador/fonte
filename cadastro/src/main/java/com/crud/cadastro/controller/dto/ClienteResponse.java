@@ -1,44 +1,26 @@
-package com.crud.cadastro.model;
+package com.crud.cadastro.controller.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
-@Entity
-@Table(name="clientes")
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="idcliente")
+import com.crud.cadastro.model.Cliente;
+
+import org.hibernate.validator.constraints.Length;
+
+public class ClienteResponse {
+
     private Long idcliente;
-
-    @Column(name="nomecliente")
+    /*@NotBlank
+    @Length
+    */
     private String nomeCliente;
-
-    @Column(name="sexocliente")
     private String sexoCliente;
-
-    @Column(name="emailcliente")
     private String emailCliente;
-
-    @Column(name="cpfcliente")
-    private String cpfcliente;
-
-    @Column(name="dtcadastro")
+    private String cpfCliente;
     private Date dtCadastroCliente;
-
-    @Column(name="dtultimaatualiz")
     private Date dtAtualizacaoCadastroCliente;
-
-    @Column(name="idnaturalidade ")
     private Long idNaturalidade;
-
-    @Column(name="idnacionalidade")
     private Long idNacionalidade;
 
     public Long getIdNaturalidade() {
@@ -55,6 +37,18 @@ public class Cliente {
 
     public void setIdNacionalidade(Long idNacionalidade) {
         this.idNacionalidade = idNacionalidade;
+    }
+
+    public static ClienteResponse converter(Cliente cli){
+        var cliente = new ClienteResponse();
+        cliente.setIdcliente(cli.getIdcliente());
+        cliente.setNomeCliente(cli.getNomeCliente());
+        cliente.setSexoCliente(cli.getSexoCliente());
+        cliente.setEmailCliente(cli.getEmailCliente());
+        cliente.setCpfCliente(cli.getCpfCliente());
+        cliente.setDtCadastroCliente(cli.getDtCadastroCliente());
+        cliente.setDtAtualizacaoCadastroCliente(cli.getDtAtualizacaoCadastroCliente());
+        return cliente;
     }
 
     public Long getIdcliente() {
@@ -90,11 +84,11 @@ public class Cliente {
     }
 
     public String getCpfCliente() {
-        return this.cpfcliente;
+        return this.cpfCliente;
     }
 
     public void setCpfCliente(String cpfCliente) {
-        this.cpfcliente = cpfCliente;
+        this.cpfCliente = cpfCliente;
     }
 
     public Date getDtCadastroCliente() {
@@ -109,8 +103,7 @@ public class Cliente {
         return this.dtAtualizacaoCadastroCliente;
     }
 
-    public void setDtAtualizacaoCadastroCliente(Date dtAtualizacaoCadastroCliente) {
-        this.dtAtualizacaoCadastroCliente = dtAtualizacaoCadastroCliente;
+    public void setDtAtualizacaoCadastroCliente(Date date) {
+        this.dtAtualizacaoCadastroCliente = date;
     }
-    
 }
