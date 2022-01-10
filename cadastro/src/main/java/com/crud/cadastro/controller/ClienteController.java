@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import com.crud.cadastro.controller.dto.ClienteResponse;
 import com.crud.cadastro.model.Cliente;
+import com.crud.cadastro.repository.ClienteCustomRepository;
 import com.crud.cadastro.repository.ClienteRepository;
 
 import org.apache.catalina.connector.Response;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,10 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClienteController {
 
     private final ClienteRepository clienteRepository;
+    private final ClienteCustomRepository clienteCustomRepository;
 
-    public ClienteController(ClienteRepository clienteRepository){
+    public ClienteController(ClienteRepository clienteRepository, ClienteCustomRepository clienteCustomRepository){
         this.clienteRepository = clienteRepository;
+        this.clienteCustomRepository = clienteCustomRepository;
     }
+
+    
 
     @GetMapping("/")
     public List<ClienteResponse> listarClientes(){
@@ -46,20 +52,27 @@ public class ClienteController {
         return cliente.map(Collections::singletonList);
     }
 
-    @GetMapping("/cpf/{cpfcliente}")
-    public ResponseEntity<Optional<Cliente>> pesquisarClienteCPF(@PathVariable("cpfcliente") String cpfCliente){
-        try {
+    @GetMapping("/cpf")
+    public List<ClienteResponse> pesquisarClienteCPF(@RequestParam("cpfcliente") String cpfCliente){
+        System.out.println("cpf = "+ cpfCliente);
+        return clienteRepository.findBycpfcliente(cpfCliente).stream().map(ClienteResponse::converter).collect(Collectors.toList());
+        /*try {
             Cliente c = new Cliente();
             c = clienteRepository.findBycpfcliente(cpfCliente);
-            return new ResponseEntity(c,HttpStatus.OK);            
+            if(c.getIdcliente()>0){
+                return new ResponseEntity<>(c,HttpStatus.OK);
+            }else{
+                return new ResponseEntity("Erro: Usuário não encontrado!",HttpStatus.OK);
+            }
+                        
         } catch (Exception e) {
             //TODO: handle exception
-            return new ResponseEntity("Erro: Usuário não encontrado!",HttpStatus.EXPECTATION_FAILED);  
-        }
+            return new ResponseEntity("Erro: Usuário não encontrado! " + e ,HttpStatus.EXPECTATION_FAILED);  
+        }*/
     }
 
 
-    @PutMapping
+    @PutMapping("/cadastrar/")
     public ResponseEntity<String> cadastrarCliente(@RequestBody Cliente c){
         /*if(validaCpfCadastrado(c.getCpfCliente())){
             return new ResponseEntity<>("CPF já cadastrado",HttpStatus.NOT_MODIFIED);
@@ -76,8 +89,8 @@ public class ClienteController {
     }    
 
     @PutMapping("/atualizar/{id}")
-    public Optional<Object> atualizarCadastroCli(@RequestBody Cliente cliente,@PathVariable Long id){
-        return clienteRepository.findById(id)
+    public Optional<Object> atualizar(@RequestBody Cliente cliente){
+        return clienteRepository.findById(cliente.getIdcliente())
                               .map(c->{
                                   c.setNomeCliente(cliente.getNomeCliente());
                                   c.setSexoCliente(cliente.getSexoCliente());
@@ -92,23 +105,25 @@ public class ClienteController {
                               });
     }
 
-
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Long> excluirUsuario(@PathVariable Long id){
+    public ResponseEntity<String> excluirUsuario(@PathVariable Long id){
         try {
             clienteRepository.deleteById(id); 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<String>("Cadastro excluido com sucesso",HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Erro ao excluir o usuário "+id+". Verifique o código informado.",HttpStatus.NOT_FOUND);
         }
     }
 
-    private boolean validaCpfCadastrado(String cpf){
-        if(clienteRepository.findBycpfcliente(cpf).getCpfCliente().isEmpty()){
-            return false;
-        }else{
-            return true;
-        }
+    @GetMapping("/filtro")
+    public List<ClienteResponse> filtroPersonalizado(
+        @RequestParam(name = "id", required =false) Long id,
+        @RequestParam(name = "nome", required=false) String nome,
+        @RequestParam(name = "cpf", required=false) String cpf){
 
+        return this.clienteCustomRepository.find(id, nome, cpf)
+                .stream()
+                .map((c) -> ClienteResponse.converter(c))
+                .collect(Collectors.toList());    
     }
 }

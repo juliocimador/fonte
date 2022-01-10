@@ -1,6 +1,7 @@
 package com.crud.cadastro.model;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -112,5 +113,5 @@ public class Cliente {
     public void setDtAtualizacaoCadastroCliente(Date dtAtualizacaoCadastroCliente) {
         this.dtAtualizacaoCadastroCliente = dtAtualizacaoCadastroCliente;
     }
-    
+
 }

@@ -1,22 +1,24 @@
 package com.crud.cadastro.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.crud.cadastro.model.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 
-    public Cliente findBycpfcliente(String cpfCliente);
+    Optional<Cliente> findBycpfcliente(String cpf);
+
+    List<Cliente> findBynomeClienteContains(String nome);
     
-    /*public final static String PESQ_POR_CPF = "SELECT cpfcliente, idcliente " + 
-                                                       "FROM Cliente " +
-                                                       "WHERE cpfcliente = :cpfCliente";
-    @Query(PESQ_POR_CPF)
-    public Cliente findBycpfcliente(@Param("cpfCliente") String cpfCliente);
-    */
+
+    @Query(
+        value="Select C from Cliente as C where C.nomeCliente = ?1"
+    )
+    Cliente buscarClientePorNome(String nome);
+
 }
