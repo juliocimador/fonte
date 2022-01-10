@@ -10,6 +10,7 @@ import com.crud.cadastro.controller.dto.ClienteResponse;
 import com.crud.cadastro.model.Cliente;
 import com.crud.cadastro.repository.ClienteRepository;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,37 +60,54 @@ public class ClienteController {
 
 
     @PutMapping
-    public String cadastrarCliente(@RequestBody Cliente c){
-        if(getClienteCPF(c.getCpfCliente())){
-            return "CPF já cadastrado";
-        };
+    public ResponseEntity<String> cadastrarCliente(@RequestBody Cliente c){
+        /*if(validaCpfCadastrado(c.getCpfCliente())){
+            return new ResponseEntity<>("CPF já cadastrado",HttpStatus.NOT_MODIFIED);
+        };*/
         try {
             c.setDtAtualizacaoCadastroCliente(new Date());
             c.setDtCadastroCliente(new Date());
             clienteRepository.save(c);    
-            return "Usuario cadastrado com sucesso";
+            return new ResponseEntity("Usuario cadastrado com sucesso",HttpStatus.OK);
         } catch (Exception e) {
             //TODO: handle exception
-            return e.toString();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }    
-    @DeleteMapping
-    public void excluirUsuario(@RequestBody Cliente c){
-        try {
-            clienteRepository.delete(c);    
-        } catch (Exception e) {
-            
-        }
-        
+
+    @PutMapping("/atualizar/{id}")
+    public Optional<Object> atualizarCadastroCli(@RequestBody Cliente cliente,@PathVariable Long id){
+        return clienteRepository.findById(id)
+                              .map(c->{
+                                  c.setNomeCliente(cliente.getNomeCliente());
+                                  c.setSexoCliente(cliente.getSexoCliente());
+                                  c.setEmailCliente(cliente.getEmailCliente());
+                                  c.setCpfCliente(cliente.getCpfCliente());
+                                  c.setIdNacionalidade(cliente.getIdNacionalidade());
+                                  c.setIdNaturalidade(cliente.getIdNacionalidade());
+                                  c.setDtAtualizacaoCadastroCliente(new Date());
+                                  //return ResponseEntity.ok().body(clienteRepository.save(c));
+                                  clienteRepository.save(c);
+                                  return ResponseEntity.ok();
+                              });
     }
 
-    private boolean getClienteCPF(String cpf){
-        Cliente c = new Cliente();
-        c = clienteRepository.findBycpfcliente(cpf);
-        if(c.getIdcliente()>0){
-            return true;
-        }else{
+
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Long> excluirUsuario(@PathVariable Long id){
+        try {
+            clienteRepository.deleteById(id); 
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private boolean validaCpfCadastrado(String cpf){
+        if(clienteRepository.findBycpfcliente(cpf).getCpfCliente().isEmpty()){
             return false;
+        }else{
+            return true;
         }
 
     }
