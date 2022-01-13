@@ -11,8 +11,6 @@ import com.crud.cadastro.model.Cliente;
 import com.crud.cadastro.repository.ClienteCustomRepository;
 import com.crud.cadastro.repository.ClienteRepository;
 
-import org.apache.catalina.connector.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +34,6 @@ public class ClienteController {
         this.clienteCustomRepository = clienteCustomRepository;
     }
 
-    
-
     @GetMapping("/")
     public List<ClienteResponse> listarClientes(){
         var clientes = clienteRepository.findAll();
@@ -52,6 +48,7 @@ public class ClienteController {
         return cliente.map(Collections::singletonList);
     }
 
+    /*  Desativo e substituido pelo "/filtro"
     @GetMapping("/cpf")
     public List<ClienteResponse> pesquisarClienteCPF(@RequestParam("cpfcliente") String cpfCliente){
         System.out.println("cpf = "+ cpfCliente);
@@ -66,24 +63,23 @@ public class ClienteController {
             }
                         
         } catch (Exception e) {
-            //TODO: handle exception
             return new ResponseEntity("Erro: Usuário não encontrado! " + e ,HttpStatus.EXPECTATION_FAILED);  
-        }*/
-    }
+        }
+    }*/
 
 
     @PutMapping("/cadastrar/")
     public ResponseEntity<String> cadastrarCliente(@RequestBody Cliente c){
-        /*if(validaCpfCadastrado(c.getCpfCliente())){
-            return new ResponseEntity<>("CPF já cadastrado",HttpStatus.NOT_MODIFIED);
-        };*/
+        if(!clienteRepository.findBycpfcliente(c.getCpfCliente()).isEmpty()){
+            //System.out.println("Usuário já cadastrado!<br>");
+            return new ResponseEntity<>("Usuário já cadastrado com o CPF:" +c.getCpfCliente() ,HttpStatus.OK);
+        };
         try {
             c.setDtAtualizacaoCadastroCliente(new Date());
             c.setDtCadastroCliente(new Date());
             clienteRepository.save(c);    
-            return new ResponseEntity("Usuario cadastrado com sucesso",HttpStatus.OK);
+            return new ResponseEntity<>("Usuario cadastrado com sucesso",HttpStatus.OK);
         } catch (Exception e) {
-            //TODO: handle exception
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }    
